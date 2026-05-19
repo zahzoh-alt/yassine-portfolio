@@ -176,7 +176,7 @@ export default function HeroSection() {
 
             <p className="font-mono text-sm mb-3 text-gray-400">
               {lang === "en"
-                ? "Hello World"
+                ? "Hello World — I'm"
                 : "Bonjour le monde — Je suis"}
             </p>
 
