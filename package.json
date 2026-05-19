@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@dhiwise/component-tagger": "^1.0.1",
+    "@emailjs/browser": "^4.4.1",
     "@heroicons/react": "^2.2.0",
     "@react-three/drei": "latest",
     "@react-three/fiber": "latest",
