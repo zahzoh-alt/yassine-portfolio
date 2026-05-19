@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
 
@@ -143,4 +143,4 @@ export default function CertificationsSection() {
       </div>
     </section>
   );
-}
+}*/
