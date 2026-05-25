@@ -33,6 +33,7 @@ digital: {
     { name: "Quizizz", pct: 90 },
     { name: "Wooclap", pct: 85 },
     { name: "Google Forms", pct: 92 },
+     { name: "MIZOU", pct: 90 },
 
     { name: "Assessment Design", pct: 88 },
     { name: "Interactive Learning", pct: 92 },
