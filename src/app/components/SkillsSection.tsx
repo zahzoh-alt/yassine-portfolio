@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useLang } from "@/context/LanguageContext";
 
 const skillData = {
@@ -103,7 +104,7 @@ function SkillCard({ category, data, visible }: {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="glass-card neon-border rounded-2xl p-6 cursor-default"
+      className="glass-card neon-border rounded-2xl p-6 cursor-default h-full"
       style={{
         transform: `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
         transition: tilt.x === 0 && tilt.y === 0 ? "transform 0.5s cubic-bezier(0.16,1,0.3,1)" : "transform 0.1s linear",
@@ -147,6 +148,41 @@ function SkillCard({ category, data, visible }: {
   );
 }
 
+/**
+ * Carte photo centrale — remplace le fichier `/public/profile.jpg`
+ * (ou change le chemin `src` ci-dessous) par ta propre photo.
+ */
+function ProfilePhotoCard() {
+  return (
+    <div
+      className="glass-card neon-border rounded-2xl p-6 h-full flex flex-col items-center justify-center gap-4"
+      style={{ boxShadow: "0 0 40px #0055FF25" }}
+    >
+      <div
+        className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden"
+        style={{
+          border: "2px solid #00FFFF",
+          boxShadow: "0 0 25px #00FFFF50, 0 0 50px #0055FF30",
+        }}
+      >
+        <Image
+          src="/assets/images/profile.jpeg"
+          alt="Ezzahi Yassine"
+          fill
+          className="object-cover"
+          sizes="160px"
+        />
+      </div>
+      <div className="text-center">
+        <p className="font-bold text-sm text-foreground uppercase tracking-wide">
+          Ezzahi Yassine
+        </p>
+        <p className="text-xs text-accent mt-1">Digital Learning Engineer</p>
+      </div>
+    </div>
+  );
+}
+
 export default function SkillsSection() {
   const { t } = useLang();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -161,8 +197,6 @@ export default function SkillsSection() {
     return () => observer.disconnect();
   }, []);
 
-  const categories = Object.keys(skillData) as CategoryKey[];
-
   return (
     <section id="skills" className="section-padding relative z-10" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -175,34 +209,20 @@ export default function SkillsSection() {
           </h2>
         </div>
 
-        {/* BENTO GRID AUDIT:
-          Array has 5 cards: [webdev, digital, robotics, programming, office]
-          Row 1: [col-1: webdev cs-1] [col-2: digital cs-1] [col-3: robotics cs-1]
-          Row 2: [col-1: programming cs-1] [col-2: office cs-1] [col-3: EXPANDED → programming+office span to fill]
-          Final: webdev cs-2, digital cs-1 on first row; programming cs-1, office cs-2 on second row; robotics cs-3 centered
-          Placed 5/5 cards ✓
+        {/* GRID AUDIT (6 blocs, photo au centre):
+          Row 1: webdev | digital | robotics
+          Row 2: programming | PHOTO (centre) | office
+          Sur mobile (1 colonne) et tablette (2 colonnes), la photo reste
+          insérée au milieu de l'ordre naturel du flux.
         */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* webdev — large */}
-          <div className="sm:col-span-2 lg:col-span-2">
-            <SkillCard category="webdev" data={skillData.webdev} visible={visible} />
-          </div>
-          {/* digital */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <SkillCard category="digital" data={skillData.digital} visible={visible} />
-          </div>
-          {/* programming */}
-          <div className="sm:col-span-1 lg:col-span-1">
-            <SkillCard category="programming" data={skillData.programming} visible={visible} />
-          </div>
-          {/* office */}
-          <div className="sm:col-span-1 lg:col-span-1">
-            <SkillCard category="office" data={skillData.office} visible={visible} />
-          </div>
-          {/* robotics — full width last */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <SkillCard category="robotics" data={skillData.robotics} visible={visible} />
-          </div>
+          <SkillCard category="webdev" data={skillData.webdev} visible={visible} />
+          <SkillCard category="digital" data={skillData.digital} visible={visible} />
+          <SkillCard category="robotics" data={skillData.robotics} visible={visible} />
+
+          <SkillCard category="programming" data={skillData.programming} visible={visible} />
+          <ProfilePhotoCard />
+          <SkillCard category="office" data={skillData.office} visible={visible} />
         </div>
       </div>
     </section>
