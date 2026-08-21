@@ -6,15 +6,15 @@ type Tab = "experience" | "education";
 
 const experiences = [
   {
-    period: "March 2026 – Present",
-    periodFr: "Mars 2026 – Présent",
+    period: "March 2026 – June 2026",
+    periodFr: "Mars 2026 – Juin 2026",
     role: "Digital Learning Engineer & Instructional Designer",
     roleFr: "Ingénieur Digital Learning & Concepteur Pédagogique",
     org: "HEP",
-    type: "PFE Internship (Current)",
-    typeFr: "Stage PFE (En cours)",
+    type: "PFE Internship",
+    typeFr: "Stage PFE",
     color: "#00FFFF",
-    current: true,
+    current: false,
     descEn:
       "Moodle LMS deployment, hosting & customization. Full digitalization of 100% online Client-Side Web Development training. AI pedagogical chatbot integration, SCORM modules, multimedia content production.",
     descFr:
@@ -23,15 +23,15 @@ const experiences = [
   },
 
   {
-    period: "2024 – Present",
-    periodFr: "2024 – Présent",
+    period: "2024 – 2026",
+    periodFr: "2024 – 2026",
     role: "Educational Robotics & STEM Trainer",
     roleFr: "Formateur Robotique Éducative & STEM",
     org: "ROFEO",
     type: "Part-time",
     typeFr: "Temps partiel",
     color: "#0055FF",
-    current: true,
+    current: false,
     descEn:
       "Hands-on robotics training with LEGO Spike and Arduino. STEM modules, project-based learning, 21st-century skills development.",
     descFr:
@@ -40,15 +40,15 @@ const experiences = [
   },
 
   {
-    period: "2026 – Present",
-    periodFr: "2026 – Présent",
+    period: "Mai 2026",
+    periodFr: "May 2026",
     role: "Adjunct Instructor — Computing & Digital Technologies",
     roleFr: "Chargé de Cours — Informatique & Technologies Numériques",
     org: "HEP",
     type: "Teaching",
     typeFr: "Enseignement",
     color: "#7B00FF",
-    current: true,
+    current: false,
     descEn:
       "Teaching Algorithms, Java, C, HTML5/CSS3, JavaScript, Bootstrap, Databases. Designing digital learning materials and interactive assessments.",
     descFr:
