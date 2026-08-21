@@ -78,6 +78,77 @@ digital: {
 
 type CategoryKey = keyof typeof skillData;
 
+/**
+ * Motifs décoratifs en arrière-plan de certaines cartes.
+ * Purement en SVG/CSS (pas de photo) pour rester léger et cohérent
+ * avec le thème néon du site.
+ */
+function CardDecoration({ category }: { category: CategoryKey }) {
+  if (category === "robotics") {
+    return (
+      <>
+        {/* Rangée de "studs" Lego en haut de la carte */}
+        <div className="absolute top-0 left-0 right-0 flex justify-center gap-3 pt-3 opacity-20 pointer-events-none">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <span
+              key={i}
+              className="w-3 h-3 rounded-full"
+              style={{ background: "#00FFFF", boxShadow: "0 0 6px #00FFFF" }}
+            />
+          ))}
+        </div>
+
+        {/* Robot stylisé en filigrane, bas-droite */}
+        <svg
+          viewBox="0 0 120 120"
+          className="absolute -bottom-4 -right-4 w-28 h-28 opacity-15 pointer-events-none"
+        >
+          <rect x="30" y="45" width="60" height="45" rx="10" fill="none" stroke="#00FFFF" strokeWidth="3" />
+          <rect x="42" y="15" width="36" height="30" rx="8" fill="none" stroke="#00FFFF" strokeWidth="3" />
+          <circle cx="54" cy="30" r="4" fill="#00FFFF" />
+          <circle cx="66" cy="30" r="4" fill="#00FFFF" />
+          <line x1="60" y1="15" x2="60" y2="4" stroke="#00FFFF" strokeWidth="3" />
+          <circle cx="60" cy="4" r="4" fill="#00FFFF" />
+          <line x1="30" y1="60" x2="14" y2="60" stroke="#00FFFF" strokeWidth="3" />
+          <line x1="90" y1="60" x2="106" y2="60" stroke="#00FFFF" strokeWidth="3" />
+          <rect x="42" y="60" width="14" height="14" rx="3" fill="#00FFFF" />
+          <rect x="64" y="60" width="14" height="14" rx="3" fill="#00FFFF" />
+          <line x1="42" y1="90" x2="38" y2="108" stroke="#00FFFF" strokeWidth="3" />
+          <line x1="78" y1="90" x2="82" y2="108" stroke="#00FFFF" strokeWidth="3" />
+        </svg>
+      </>
+    );
+  }
+
+  if (category === "webdev") {
+    const badges = [
+      { label: "5", name: "HTML5", color: "#E34F26", rotate: -8 },
+      { label: "3", name: "CSS3", color: "#1572B6", rotate: 6 },
+      { label: "JS", name: "JavaScript", color: "#F7DF1E", rotate: -4 },
+    ];
+    return (
+      <div className="absolute -top-3 -right-3 flex gap-2 opacity-25 pointer-events-none">
+        {badges.map((b) => (
+          <div
+            key={b.name}
+            className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-extrabold"
+            style={{
+              background: b.color,
+              color: b.color === "#F7DF1E" ? "#111" : "#fff",
+              transform: `rotate(${b.rotate}deg)`,
+              boxShadow: `0 0 12px ${b.color}80`,
+            }}
+          >
+            {b.label}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+}
+
 function SkillCard({ category, data, visible }: {
   category: CategoryKey;
   data: typeof skillData[CategoryKey];
@@ -104,14 +175,16 @@ function SkillCard({ category, data, visible }: {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="glass-card neon-border rounded-2xl p-6 cursor-default h-full"
+      className="glass-card neon-border rounded-2xl p-6 cursor-default h-full relative overflow-hidden"
       style={{
         transform: `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
         transition: tilt.x === 0 && tilt.y === 0 ? "transform 0.5s cubic-bezier(0.16,1,0.3,1)" : "transform 0.1s linear",
         boxShadow: `0 0 30px ${data.color}15`,
       }}
     >
-      <div className="flex items-center gap-3 mb-6">
+      <CardDecoration category={category} />
+
+      <div className="relative z-10 flex items-center gap-3 mb-6">
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
           style={{ background: `${data.color}20`, border: `1px solid ${data.color}30` }}
@@ -123,7 +196,7 @@ function SkillCard({ category, data, visible }: {
         </h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="relative z-10 space-y-4">
         {data.skills.map((skill, i) => (
           <div key={skill.name}>
             <div className="flex justify-between text-xs mb-1.5">
