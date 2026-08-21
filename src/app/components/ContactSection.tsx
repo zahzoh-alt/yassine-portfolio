@@ -100,7 +100,7 @@ export default function ContactSection() {
               {
                 icon: "✉️",
                 label: "Email",
-                value: "yassinesama412@gmail.com",
+                value: "yassinezzahi520@gmail.com",
                 href: "mailto:yassinesama412@gmail.com",
                 color: "#0055FF",
               },

@@ -114,7 +114,7 @@ export default function AboutSection() {
                   <span className="text-accent">📍</span> Morocco
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span className="text-accent">✉️</span> yassinesama412@gmail.com
+                  <span className="text-accent">✉️</span> yassinezzahi520@gmail.com
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <span className="text-accent">📞</span> +212 7 13 38 55 51
