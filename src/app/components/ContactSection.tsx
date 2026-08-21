@@ -17,6 +17,7 @@ export default function ContactSection() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,6 +34,7 @@ export default function ContactSection() {
   // 🚀 EMAILJS FUNCTION
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
 
     emailjs
       .send(
@@ -58,6 +60,9 @@ export default function ContactSection() {
       })
       .catch((error) => {
         console.log("EmailJS error:", error);
+      })
+      .finally(() => {
+        setSending(false);
       });
   };
 
@@ -72,6 +77,70 @@ export default function ContactSection() {
 
   return (
     <section id="contact" className="section-padding relative z-10" ref={sectionRef}>
+      <style jsx global>{`
+        @keyframes sendBtnGradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        @keyframes sendBtnArrow {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(6px); }
+        }
+        @keyframes sendBtnSpin {
+          to { transform: rotate(360deg); }
+        }
+        .send-btn {
+          position: relative;
+          overflow: hidden;
+          background-size: 200% 200%;
+          animation: sendBtnGradient 4s ease infinite;
+          transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s;
+          box-shadow: 0 0 0px rgba(0,85,255,0);
+        }
+        .send-btn:hover:not(:disabled) {
+          transform: translateY(-2px) scale(1.015);
+          box-shadow: 0 8px 30px rgba(0,85,255,0.35), 0 8px 30px rgba(123,0,255,0.25);
+        }
+        .send-btn:active:not(:disabled) {
+          transform: translateY(0) scale(0.98);
+        }
+        .send-btn:disabled {
+          opacity: 0.8;
+          cursor: not-allowed;
+        }
+        .send-btn .arrow {
+          display: inline-block;
+          transition: transform 0.2s;
+        }
+        .send-btn:hover:not(:disabled) .arrow {
+          animation: sendBtnArrow 0.9s ease-in-out infinite;
+        }
+        .send-btn .spinner {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(255,255,255,0.35);
+          border-top-color: #fff;
+          border-radius: 50%;
+          display: inline-block;
+          animation: sendBtnSpin 0.7s linear infinite;
+        }
+        .send-btn::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: -75%;
+          width: 50%;
+          height: 100%;
+          background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+          transform: skewX(-20deg);
+          transition: left 0.7s ease;
+        }
+        .send-btn:hover:not(:disabled)::before {
+          left: 130%;
+        }
+      `}</style>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
         {/* TITLE */}
@@ -227,13 +296,24 @@ export default function ContactSection() {
 
                   <button
                     type="submit"
-                    className="w-full py-4 rounded-xl font-bold text-white"
+                    disabled={sending}
+                    className="send-btn w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2"
                     style={{
                       background:
-                        "linear-gradient(135deg, #0055FF, #7B00FF)",
+                        "linear-gradient(135deg, #0055FF, #7B00FF, #00FFFF, #7B00FF, #0055FF)",
                     }}
                   >
-                    {t("contact_send")} →
+                    {sending ? (
+                      <>
+                        <span className="spinner" />
+                        <span>Envoi...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{t("contact_send")}</span>
+                        <span className="arrow">→</span>
+                      </>
+                    )}
                   </button>
 
                 </form>
