@@ -23,8 +23,8 @@ const experiences = [
   },
 
   {
-    period: "2024 – 2026",
-    periodFr: "2024 – 2026",
+    period: "October 2024 – June 2026",
+    periodFr: "Octobre 2024 – Juin 2026",
     role: "Educational Robotics & STEM Trainer",
     roleFr: "Formateur Robotique Éducative & STEM",
     org: "ROFEO",
@@ -40,8 +40,8 @@ const experiences = [
   },
 
   {
-    period: "Mai 2026",
-    periodFr: "May 2026",
+    period: "May 2026",
+    periodFr: "Mai 2026",
     role: "Adjunct Instructor — Computing & Digital Technologies",
     roleFr: "Chargé de Cours — Informatique & Technologies Numériques",
     org: "HEP",
