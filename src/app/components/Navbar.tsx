@@ -142,7 +142,7 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <div
         ref={menuRef}
-        className={`fixed inset-0 z-40 flex flex-col justify-center items-center transition-all duration-500 ${
+        className={`fixed inset-0 z-[48] flex flex-col justify-center items-center transition-all duration-500 ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         style={{ background: "rgba(5,8,22,0.96)", backdropFilter: "blur(20px)" }}

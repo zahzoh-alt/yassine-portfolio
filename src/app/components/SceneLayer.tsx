@@ -56,14 +56,8 @@ export default function SceneLayer() {
   if (mode === "pending") return null;
 
   return (
-    <div
-      className="fixed inset-0 pointer-events-none scene-layer"
-      style={{ zIndex: front ? 130 : 0 }}
-      aria-hidden="true"
-    >
-      <GLBoundary onError={() => setMode("fallback")}>
-        <Experience tier={cfg.tier} reduced={cfg.reduced} onFail={() => setMode("fallback")} />
-      </GLBoundary>
-    </div>
+    <GLBoundary onError={() => setMode("fallback")}>
+      <Experience tier={cfg.tier} reduced={cfg.reduced} front={front} onFail={() => setMode("fallback")} />
+    </GLBoundary>
   );
 }

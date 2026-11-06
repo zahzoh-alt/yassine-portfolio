@@ -366,7 +366,7 @@ export default function HeroSection() {
                     <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
                   </svg>
                 </a>
-                <a href="mailto:yassinesama412@gmail.com" className={socialClass} aria-label="Email">
+                <a href="mailto:yassinezzahi520@gmail.com" className={socialClass} aria-label="Email">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l9 6 9-6" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z" />
