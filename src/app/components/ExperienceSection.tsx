@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
+import SectionHeader from "./SectionHeader";
+import { robotHoverProps } from "@/lib/robotBus";
 
 type Tab = "experience" | "education";
 
@@ -145,6 +147,37 @@ export default function ExperienceSection() {
   const [tab, setTab] = useState<Tab>("experience");
   const sectionRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-linked glowing line: fills as the visitor reads the timeline,
+  // and lights up each milestone once the light reaches it.
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = timelineRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const progress = Math.min(1, Math.max(0, (vh * 0.65 - r.top) / r.height));
+      el.style.setProperty("--progress", String(progress));
+      el.querySelectorAll<HTMLElement>("[data-milestone]").forEach((m) => {
+        const pos = (m.offsetTop + 24) / r.height;
+        m.classList.toggle("is-lit", progress >= pos);
+      });
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [tab]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -166,22 +199,16 @@ export default function ExperienceSection() {
       ref={sectionRef}
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <span className="text-xs font-medium text-accent tracking-widest uppercase block mb-3">
-            — Journey —
-          </span>
-
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground mb-8">
-            {t("experience_title")}
-          </h2>
-
+        <SectionHeader kicker="Journey" title={t("experience_title")} slot="experience" side="left" className="mb-12" slotClass="xl:-left-40">
           {/* Tab switcher */}
-          <div className="inline-flex glass-card neon-border rounded-xl p-1 gap-1">
+          <div className="inline-flex glass-card neon-border rounded-xl p-1 gap-1 mt-8" role="tablist">
             {(["experience", "education"] as Tab[]).map(
               (tabKey) => (
                 <button
                   key={tabKey}
                   onClick={() => setTab(tabKey)}
+                  role="tab"
+                  aria-selected={tab === tabKey}
                   className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all duration-300 ${
                     tab === tabKey
                       ? "text-accent-foreground"
@@ -206,18 +233,13 @@ export default function ExperienceSection() {
               )
             )}
           </div>
-        </div>
+        </SectionHeader>
 
         {/* Timeline */}
-        <div className="relative">
-          {/* Vertical line */}
-          <div
-            className="absolute left-6 sm:left-8 top-0 bottom-0 w-px"
-            style={{
-              background:
-                "linear-gradient(to bottom, #0055FF, #7B00FF, #00FFFF, transparent)",
-            }}
-          />
+        <div className="relative timeline" ref={timelineRef}>
+          {/* Vertical line: dim track + scroll-driven light */}
+          <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-px bg-white/10" aria-hidden="true" />
+          <div className="timeline-fill absolute left-6 sm:left-8 top-0 w-[2px] -ml-[0.5px]" aria-hidden="true" />
 
           <div className="space-y-8 pl-16 sm:pl-20">
             {tab === "experience"
@@ -262,7 +284,8 @@ function ExperienceItem({
 }) {
   return (
     <div
-      className="relative"
+      className="relative milestone"
+      data-milestone
       style={{
         opacity: visible ? 1 : 0,
         transform: visible
@@ -277,14 +300,14 @@ function ExperienceItem({
     >
       {/* Timeline dot */}
       <div
-        className="absolute -left-14 sm:-left-16 top-4 w-4 h-4 rounded-full border-2 border-background"
+        className="milestone-dot absolute -left-12 sm:-left-14 top-5 w-4 h-4 rounded-full border-2 border-background"
         style={{
           background: item.color,
           boxShadow: `0 0 10px ${item.color}80`,
         }}
       />
 
-      <div className="glass-card neon-border rounded-2xl p-6">
+      <div className="glass-card neon-border rounded-2xl p-6 milestone-card" {...robotHoverProps(0.22)}>
         <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
           <div>
             <h3 className="font-bold text-base text-foreground">
@@ -359,7 +382,8 @@ function EducationItem({
 }) {
   return (
     <div
-      className="relative"
+      className="relative milestone"
+      data-milestone
       style={{
         opacity: visible ? 1 : 0,
         transform: visible
@@ -373,14 +397,14 @@ function EducationItem({
       }}
     >
       <div
-        className="absolute -left-14 sm:-left-16 top-4 w-4 h-4 rounded-full border-2 border-background"
+        className="milestone-dot absolute -left-12 sm:-left-14 top-5 w-4 h-4 rounded-full border-2 border-background"
         style={{
           background: item.color,
           boxShadow: `0 0 10px ${item.color}80`,
         }}
       />
 
-      <div className="glass-card neon-border rounded-2xl p-6">
+      <div className="glass-card neon-border rounded-2xl p-6 milestone-card" {...robotHoverProps(0.22)}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="font-bold text-base text-foreground mb-1">

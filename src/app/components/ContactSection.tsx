@@ -3,9 +3,12 @@
 import emailjs from "@emailjs/browser";
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
+import SectionHeader from "./SectionHeader";
+import { robotHoverProps, robotWave } from "@/lib/robotBus";
 
 export default function ContactSection() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const [error, setError] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -35,6 +38,7 @@ export default function ContactSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    setError(false);
 
     emailjs
       .send(
@@ -50,6 +54,7 @@ export default function ContactSection() {
       )
       .then(() => {
         setSubmitted(true);
+        robotWave();
 
         setFormState({
           name: "",
@@ -59,7 +64,8 @@ export default function ContactSection() {
         });
       })
       .catch((error) => {
-        console.log("EmailJS error:", error);
+        console.error("EmailJS error:", error);
+        setError(true);
       })
       .finally(() => {
         setSending(false);
@@ -143,15 +149,8 @@ export default function ContactSection() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-        {/* TITLE */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-medium text-accent tracking-widest uppercase block mb-3">
-            — Let&apos;s Connect —
-          </span>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground">
-            {t("contact_title")}
-          </h2>
-        </div>
+        {/* TITLE + holographic landing platform for the robot */}
+        <SectionHeader kicker="Let's Connect" title={t("contact_title")} slot="contact" side="right" large />
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
 
@@ -193,6 +192,7 @@ export default function ContactSection() {
                 href={item.href}
                 target={item.href.startsWith("http") ? "_blank" : undefined}
                 rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                {...robotHoverProps(0.25)}
                 className="flex items-center gap-4 glass-card neon-border rounded-xl p-4 group hover:scale-[1.02] transition-transform duration-300"
               >
                 <div
@@ -281,18 +281,30 @@ export default function ContactSection() {
                     required
                   />
 
+                  <label htmlFor="contact-message" className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">
+                    {t("contact_message")}
+                  </label>
                   <textarea
+                    id="contact-message"
                     name="message"
                     rows={5}
                     value={formState.message}
                     onChange={handleChange}
                     required
-                    className="w-full rounded-xl px-4 py-3 text-sm text-foreground outline-none"
+                    className="w-full rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-cyan-400/60 transition-shadow"
                     style={{
                       background: "rgba(255,255,255,0.04)",
                       border: "1px solid rgba(0,255,255,0.15)",
                     }}
                   />
+
+                  {error && (
+                    <p role="alert" className="text-sm text-red-300 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3">
+                      {lang === "en"
+                        ? "The message could not be sent. Please try again or write to me directly by email."
+                        : "Le message n’a pas pu être envoyé. Réessayez ou écrivez-moi directement par e-mail."}
+                    </p>
+                  )}
 
                   <button
                     type="submit"
@@ -306,7 +318,7 @@ export default function ContactSection() {
                     {sending ? (
                       <>
                         <span className="spinner" />
-                        <span>Envoi...</span>
+                        <span>{lang === "en" ? "Sending…" : "Envoi…"}</span>
                       </>
                     ) : (
                       <>
@@ -346,17 +358,18 @@ function InputField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">
+      <label htmlFor={`contact-${name}`} className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">
         {label}
       </label>
 
       <input
+        id={`contact-${name}`}
         type={type}
         name={name}
         value={value}
         onChange={onChange}
         required={required}
-        className="w-full rounded-xl px-4 py-3 text-sm text-foreground outline-none"
+        className="w-full rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-cyan-400/60 transition-shadow"
         style={{
           background: "rgba(255,255,255,0.04)",
           border: "1px solid rgba(0,255,255,0.15)",

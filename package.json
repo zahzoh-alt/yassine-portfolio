@@ -52,8 +52,8 @@
     "@dhiwise/component-tagger": "^1.0.1",
     "@emailjs/browser": "^4.4.1",
     "@heroicons/react": "^2.2.0",
-    "@react-three/drei": "latest",
-    "@react-three/fiber": "latest",
+    "@react-three/drei": "10.7.7",
+    "@react-three/fiber": "9.6.1",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
     "lucide-react": "^1.7.0",
@@ -61,7 +61,7 @@
     "react": "19.0.3",
     "react-dom": "19.0.3",
     "recharts": "^2.15.2",
-    "three": "latest"
+    "three": "0.184.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -69,7 +69,7 @@
     "@types/node": "^20",
     "@types/react": "19.0.3",
     "@types/react-dom": "19.0.3",
-    "@types/three": "latest",
+    "@types/three": "0.184.1",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
     "autoprefixer": "10.4.2",

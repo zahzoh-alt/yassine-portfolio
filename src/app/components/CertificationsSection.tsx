@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
+import SectionHeader from "./SectionHeader";
+import { robotHoverProps } from "@/lib/robotBus";
 
 const certifications = [
   {
@@ -66,27 +68,20 @@ export default function CertificationsSection() {
   return (
     <section id="certifications" className="section-padding relative z-10" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
-          <span className="text-xs font-medium text-accent tracking-widest uppercase block mb-3">
-            — Achievements —
-          </span>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground">
-            {t("certifications_title")}
-          </h2>
-        </div>
+        <SectionHeader kicker="Achievements" title={t("certifications_title")} slot="certifications" side="left" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {certifications?.map((cert, i) => (
             <div
               key={i}
               className="glass-card rounded-2xl p-6 cursor-default"
+              {...robotHoverProps(0.22)}
               style={{
                 opacity: visible ? 1 : 0,
                 transform: visible ? "translateY(0)" : "translateY(30px)",
-                transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms`,
+                transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 80}ms, border-color 0.5s ease, box-shadow 0.5s ease`,
                 border: `1px solid ${activeIdx === i ? cert?.color + "40" : "rgba(0,255,255,0.08)"}`,
                 boxShadow: activeIdx === i ? `0 0 25px ${cert?.color}15` : "none",
-                transition2: "border-color 0.5s ease, box-shadow 0.5s ease",
               }}
             >
               <div className="flex items-start gap-4">

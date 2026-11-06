@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 
 type Lang = "en" | "fr";
 
@@ -22,6 +22,7 @@ const translations: Record<Lang, Record<string, string>> = {
     hero_subtitle: "Digital Learning Engineer · LMS & Moodle Specialist · Front-End Creative Developer",
     hero_availability: "Available to collaborate on innovative projects in Digital Learning, educational technologies and immersive digital experiences.",
     cta_explore: "Explore My Work",
+    hero_discover: "Discover my universe",
     cta_download_cv: "Download CV",
     about_title: "About Me",
     about_bio: "I am a Digital Learning Engineer and Instructional Designer driven by a deep passion for reshaping the future of education through technology. At the crossroads of pedagogy and innovation, I design immersive, learner-centred digital experiences that transform the way knowledge is acquired. From Moodle LMS architecture and SCORM content engineering to AI-powered pedagogical tools and interactive e-learning modules — I bring a hybrid expertise that bridges creative technology with meaningful learning outcomes. My mission: to make education smarter, more engaging, and profoundly human.",
@@ -67,6 +68,7 @@ const translations: Record<Lang, Record<string, string>> = {
     hero_subtitle: "Ingénieur Digital Learning · Spécialiste LMS & Moodle · Développeur Front-End Créatif",
     hero_availability: "Disponible pour collaborer sur des projets innovants en Digital Learning, technologies éducatives et expériences numériques immersives.",
     cta_explore: "Découvrir Mon Travail",
+    hero_discover: "Découvrir mon univers",
     cta_download_cv: "Télécharger CV",
     about_title: "À Propos",
     about_bio: "Ingénieur Digital Learning et Concepteur Pédagogique, je suis animé par une passion profonde pour la transformation de l'éducation par la technologie. À l'intersection de la pédagogie et de l'innovation numérique, je conçois des expériences d'apprentissage immersives et centrées sur l'apprenant, qui révolutionnent la façon dont le savoir est transmis. De l'architecture Moodle LMS à l'ingénierie SCORM, des outils pédagogiques propulsés par l'IA aux modules e-learning interactifs — mon expertise hybride relie la créativité technologique aux résultats pédagogiques. Ma mission : rendre l'éducation plus intelligente, plus engageante et profondément humaine.",
@@ -112,6 +114,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>("en");
   const toggleLang = useCallback(() => setLang((l) => (l === "en" ? "fr" : "en")), []);
   const t = useCallback((key: string) => translations[lang][key] ?? key, [lang]);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
   return (
     <LanguageContext.Provider value={{ lang, toggleLang, t }}>
       {children}

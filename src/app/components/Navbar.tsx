@@ -19,10 +19,13 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
       const sections = navKeys.map((n) => n.href.slice(1));
       for (const id of [...sections].reverse()) {
         const el = document.getElementById(id);
@@ -57,11 +60,18 @@ export default function Navbar() {
   return (
     <>
       <nav
+        aria-label="Main"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
             ? "glass-card border-b py-3" :"bg-transparent py-5"
         }`}
       >
+        <div
+          ref={progressRef}
+          className="absolute left-0 right-0 bottom-0 h-[2px] origin-left"
+          style={{ transform: "scaleX(0)", background: "linear-gradient(90deg, #00FFFF, #0055FF, #7B00FF)", boxShadow: "0 0 10px rgba(0,255,255,0.6)" }}
+          aria-hidden="true"
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -79,6 +89,7 @@ export default function Navbar() {
               <button
                 key={key}
                 onClick={() => scrollTo(href)}
+                aria-current={activeSection === href.slice(1) ? "true" : undefined}
                 className={`text-xs font-medium tracking-wide uppercase transition-all duration-300 relative group ${
                   activeSection === href.slice(1)
                     ? "text-accent" :"text-muted-foreground hover:text-foreground"
@@ -98,7 +109,7 @@ export default function Navbar() {
             <button
               onClick={toggleLang}
               className="neon-border text-xs font-bold tracking-widest px-3 py-1.5 rounded text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300"
-              aria-label="Toggle language"
+              aria-label={lang === "en" ? "Passer en français" : "Switch to English"}
             >
               {lang === "en" ? "FR" : "EN"}
             </button>
@@ -134,7 +145,7 @@ export default function Navbar() {
         className={`fixed inset-0 z-40 flex flex-col justify-center items-center transition-all duration-500 ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
-        style={{ background: "rgba(10,10,10,0.97)", backdropFilter: "blur(20px)" }}
+        style={{ background: "rgba(5,8,22,0.96)", backdropFilter: "blur(20px)" }}
         aria-hidden={!menuOpen}
       >
         <div className="flex flex-col items-center gap-8">

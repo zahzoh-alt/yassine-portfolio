@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
+import SectionHeader from "./SectionHeader";
+import { robotHoverProps } from "@/lib/robotBus";
 
 const services = [
   {
@@ -78,14 +80,7 @@ export default function ServicesSection() {
   return (
     <section id="services" className="section-padding relative z-10" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
-          <span className="text-xs font-medium text-accent tracking-widest uppercase block mb-3">
-            — What I Do —
-          </span>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground">
-            {t("services_title")}
-          </h2>
-        </div>
+        <SectionHeader kicker="What I Do" title={t("services_title")} slot="services" side="right" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((s, i) => (
@@ -115,6 +110,7 @@ function ServiceCard({
   index: number;
 }) {
   const [hovered, setHovered] = useState(false);
+  const hover = robotHoverProps(0.22);
 
   return (
     <div
@@ -126,8 +122,14 @@ function ServiceCard({
         border: `1px solid ${hovered ? service.color + "40" : "rgba(0,255,255,0.08)"}`,
         boxShadow: hovered ? `0 0 30px ${service.color}15` : "none",
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={(e) => {
+        setHovered(true);
+        hover.onMouseEnter(e);
+      }}
+      onMouseLeave={(e) => {
+        setHovered(false);
+        hover.onMouseLeave(e);
+      }}
     >
       <div
         className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5 transition-transform duration-300 group-hover:scale-110"

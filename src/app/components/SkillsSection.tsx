@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useLang } from "@/context/LanguageContext";
+import SectionHeader from "./SectionHeader";
+import { robotHoverProps, robotLook, robotRelease } from "@/lib/robotBus";
 
 const skillData = {
   webdev: {
@@ -149,10 +151,11 @@ function CardDecoration({ category }: { category: CategoryKey }) {
   return null;
 }
 
-function SkillCard({ category, data, visible }: {
+function SkillCard({ category, data, visible, highlight = false }: {
   category: CategoryKey;
   data: typeof skillData[CategoryKey];
   visible: boolean;
+  highlight?: boolean;
 }) {
   const { t } = useLang();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -168,14 +171,21 @@ function SkillCard({ category, data, visible }: {
     setTilt({ x, y });
   };
 
-  const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    setTilt({ x: 0, y: 0 });
+    robotRelease(e.currentTarget);
+  };
 
   return (
     <div
       ref={cardRef}
+      id={`skill-card-${category}`}
       onMouseMove={handleMouseMove}
+      onMouseEnter={(e) => robotLook(e.currentTarget, 0.25)}
       onMouseLeave={handleMouseLeave}
-      className="glass-card neon-border rounded-2xl p-6 cursor-default h-full relative overflow-hidden"
+      className={`glass-card neon-border rounded-2xl p-6 cursor-default h-full relative overflow-hidden transition-[outline-color] duration-500 outline outline-2 outline-offset-4 ${
+        highlight ? "outline-cyan-400/70" : "outline-transparent"
+      }`}
       style={{
         transform: `perspective(1000px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
         transition: tilt.x === 0 && tilt.y === 0 ? "transform 0.5s cubic-bezier(0.16,1,0.3,1)" : "transform 0.1s linear",
@@ -256,10 +266,149 @@ function ProfilePhotoCard() {
   );
 }
 
+/* =========================================================
+   SKILL ORBIT — orbital system built only from skillData
+========================================================= */
+
+const CATEGORY_ORDER: CategoryKey[] = ["digital", "webdev", "programming", "robotics", "office"];
+const ORBIT_PICK: Record<CategoryKey, number> = { digital: 6, webdev: 3, programming: 3, robotics: 1, office: 1 };
+
+function SkillOrbit({ active, onSelect }: { active: CategoryKey | null; onSelect: (c: CategoryKey) => void }) {
+  const { t } = useLang();
+  const outer = CATEGORY_ORDER.flatMap((cat) =>
+    skillData[cat].skills.slice(0, ORBIT_PICK[cat]).map((sk) => ({ name: sk.name, cat, color: skillData[cat].color }))
+  );
+
+  return (
+    <div className="skill-orbit relative mx-auto aspect-square my-8 sm:my-12" data-reveal>
+      {/* depth rings */}
+      <div className="absolute inset-[4%] rounded-full border border-cyan-400/10" aria-hidden="true" />
+      <div className="absolute inset-[21%] rounded-full border border-dashed border-blue-500/15" aria-hidden="true" />
+      <div className="absolute inset-[36%] rounded-full orbit-core-glow" aria-hidden="true" />
+
+      {/* Core */}
+      <div className="absolute inset-[38%] rounded-full flex flex-col items-center justify-center text-center orbit-core">
+        <span className="text-[9px] sm:text-xs font-mono tracking-[0.25em] text-cyan-300/80 uppercase">Core</span>
+        <span className="text-xs sm:text-lg font-extrabold text-white leading-tight">
+          Digital
+          <br />
+          Learning
+        </span>
+      </div>
+
+      {/* Outer ring — individual skills */}
+      <ul className="orbit-ring orbit-ring--outer absolute inset-0" aria-label="Skills">
+        {outer.map((sk, i) => {
+          const a = (i / outer.length) * 360;
+          const dim = active && active !== sk.cat;
+          return (
+            <li
+              key={sk.name}
+              className="orbit-node absolute left-1/2 top-1/2"
+              style={{ transform: `rotate(${a}deg) translateX(calc(var(--orbit) * 0.44)) rotate(${-a}deg)` }}
+            >
+              <span className="orbit-counter relative block w-0 h-0">
+                <span
+                  className={`absolute left-0 top-0 w-max -translate-x-1/2 -translate-y-1/2 whitespace-nowrap max-w-[84px] sm:max-w-none truncate rounded-full px-2 sm:px-2.5 py-1 text-[9px] sm:text-xs font-medium border backdrop-blur-md transition-all duration-500 ${
+                    dim ? "opacity-30" : "opacity-100"
+                  }`}
+                  style={{
+                    borderColor: `${sk.color}55`,
+                    color: "#e6f7ff",
+                    background: `${sk.color}1f`,
+                    boxShadow: active === sk.cat ? `0 0 18px ${sk.color}90` : "none",
+                  }}
+                >
+                  {sk.name}
+                </span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Inner ring — categories (interactive) + light connections to the core */}
+      <div className="orbit-ring orbit-ring--inner absolute inset-0">
+        <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="-50 -50 100 100" aria-hidden="true">
+          {CATEGORY_ORDER.map((cat, i) => {
+            const a = (i / CATEGORY_ORDER.length) * Math.PI * 2;
+            const b = ((i + 1) / CATEGORY_ORDER.length) * Math.PI * 2;
+            const on = active === cat;
+            return (
+              <g key={cat}>
+                <line
+                  x1={0}
+                  y1={0}
+                  x2={Math.cos(a) * 28}
+                  y2={Math.sin(a) * 28}
+                  stroke={skillData[cat].color}
+                  strokeOpacity={on ? 0.95 : 0.3}
+                  strokeWidth={on ? 0.7 : 0.3}
+                  className="orbit-beam"
+                />
+                <line
+                  x1={Math.cos(a) * 28}
+                  y1={Math.sin(a) * 28}
+                  x2={Math.cos(b) * 28}
+                  y2={Math.sin(b) * 28}
+                  stroke="#00FFFF"
+                  strokeOpacity={0.15}
+                  strokeWidth={0.25}
+                />
+              </g>
+            );
+          })}
+        </svg>
+        {CATEGORY_ORDER.map((cat, i) => {
+          const a = (i / CATEGORY_ORDER.length) * 360;
+          const data = skillData[cat];
+          const on = active === cat;
+          return (
+            <div
+              key={cat}
+              className="orbit-node absolute left-1/2 top-1/2"
+              style={{ transform: `rotate(${a}deg) translateX(calc(var(--orbit) * 0.28)) rotate(${-a}deg)` }}
+            >
+              <span className="orbit-counter relative block w-0 h-0">
+                <button
+                  type="button"
+                  onClick={() => onSelect(cat)}
+                  {...robotHoverProps(0.3)}
+                  aria-pressed={on}
+                  className="absolute left-0 top-0 w-max -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 rounded-2xl px-2 py-1.5 sm:px-3 sm:py-2 border backdrop-blur-xl transition-all duration-300 hover:scale-110 focus-visible:scale-110"
+                  style={{
+                    borderColor: on ? data.color : `${data.color}66`,
+                    background: on ? `${data.color}40` : "rgba(11,16,35,0.8)",
+                    boxShadow: on ? `0 0 28px ${data.color}` : `0 0 14px ${data.color}40`,
+                  }}
+                >
+                  <span className="text-base sm:text-2xl" aria-hidden="true">
+                    {data.icon}
+                  </span>
+                  <span className="text-[8px] sm:text-[11px] font-bold uppercase tracking-wide text-white whitespace-nowrap">
+                    {t(`skills_${cat}`)}
+                  </span>
+                </button>
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function SkillsSection() {
   const { t } = useLang();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [active, setActive] = useState<CategoryKey | null>(null);
+
+  const select = (c: CategoryKey) => {
+    setActive((prev) => (prev === c ? null : c));
+    const card = document.getElementById(`skill-card-${c}`);
+    if (card && active !== c) setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "center" }), 250);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -271,16 +420,11 @@ export default function SkillsSection() {
   }, []);
 
   return (
-    <section id="skills" className="section-padding relative z-10" ref={sectionRef}>
+    <section id="skills" className="section-padding relative z-10 overflow-x-clip" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-16">
-          <span className="text-xs font-medium text-accent tracking-widest uppercase block mb-3">
-            — Expertise —
-          </span>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground">
-            {t("skills_title")}
-          </h2>
-        </div>
+        <SectionHeader kicker="Expertise" title={t("skills_title")} slot="skills" side="left" className="mb-4" />
+
+        <SkillOrbit active={active} onSelect={select} />
 
         {/* GRID AUDIT (6 blocs, photo au centre):
           Row 1: webdev | digital | robotics
@@ -289,13 +433,13 @@ export default function SkillsSection() {
           insérée au milieu de l'ordre naturel du flux.
         */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <SkillCard category="webdev" data={skillData.webdev} visible={visible} />
-          <SkillCard category="digital" data={skillData.digital} visible={visible} />
-          <SkillCard category="robotics" data={skillData.robotics} visible={visible} />
+          <SkillCard category="webdev" data={skillData.webdev} visible={visible} highlight={active === "webdev"} />
+          <SkillCard category="digital" data={skillData.digital} visible={visible} highlight={active === "digital"} />
+          <SkillCard category="robotics" data={skillData.robotics} visible={visible} highlight={active === "robotics"} />
 
-          <SkillCard category="programming" data={skillData.programming} visible={visible} />
+          <SkillCard category="programming" data={skillData.programming} visible={visible} highlight={active === "programming"} />
           <ProfilePhotoCard />
-          <SkillCard category="office" data={skillData.office} visible={visible} />
+          <SkillCard category="office" data={skillData.office} visible={visible} highlight={active === "office"} />
         </div>
       </div>
     </section>

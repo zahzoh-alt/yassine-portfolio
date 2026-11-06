@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/context/LanguageContext";
+import AppImage from "@/components/ui/AppImage";
+import SectionHeader from "./SectionHeader";
+import { robotHoverProps } from "@/lib/robotBus";
 
 const stats = [
   { key: "about_stat1_label", value: 5, suffix: "+" },
@@ -58,6 +61,43 @@ function StatItem({ statKey, value, suffix }: { statKey: string; value: number; 
   );
 }
 
+/** Portrait displayed as a hologram: scan line, HUD corners, 3D tilt. */
+function HoloPortrait() {
+  const ref = useRef<HTMLDivElement>(null);
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = ref.current?.getBoundingClientRect();
+    if (!r || !ref.current) return;
+    ref.current.style.setProperty("--rx", `${(-(e.clientY - r.top) / r.height + 0.5) * 10}deg`);
+    ref.current.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 12}deg`);
+  };
+  const onLeave = () => {
+    ref.current?.style.setProperty("--rx", "0deg");
+    ref.current?.style.setProperty("--ry", "0deg");
+  };
+  return (
+    <div className="holo-portrait-wrap h-full" {...robotHoverProps(0.3)}>
+      <div ref={ref} className="holo-portrait relative h-full min-h-[380px] rounded-[28px] overflow-hidden" onMouseMove={onMove} onMouseLeave={onLeave}>
+        <AppImage
+          src="/assets/images/yassine-1779107429440.png"
+          alt="Ezzahi Yassine professional portrait"
+          fill
+          className="object-cover object-top"
+          sizes="(max-width: 1024px) 90vw, 400px"
+        />
+        <div className="absolute inset-0 holo-tint" aria-hidden="true" />
+        <div className="absolute inset-x-0 h-24 holo-scan" aria-hidden="true" />
+        {["top-3 left-3 border-t-2 border-l-2", "top-3 right-3 border-t-2 border-r-2", "bottom-3 left-3 border-b-2 border-l-2", "bottom-3 right-3 border-b-2 border-r-2"].map((c) => (
+          <span key={c} className={`absolute w-6 h-6 border-cyan-300/80 ${c}`} aria-hidden="true" />
+        ))}
+        <div className="absolute bottom-5 left-5 right-5">
+          <p className="font-mono text-[10px] tracking-[0.3em] text-cyan-300/90 uppercase">ID · Digital Learning</p>
+          <p className="text-lg font-bold text-white">Ezzahi Yassine</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AboutSection() {
   const { t } = useLang();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -85,15 +125,7 @@ export default function AboutSection() {
   return (
     <section id="about" className="section-padding relative z-10" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Section header */}
-        <div className="reveal-on-scroll mb-16 text-center">
-          <span className="text-xs font-medium text-accent tracking-widest uppercase block mb-3">
-            — {t("nav_about")} —
-          </span>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground">
-            {t("about_title")}
-          </h2>
-        </div>
+        <SectionHeader kicker={t("nav_about")} title={t("about_title")} slot="about" side="right" />
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-20 reveal-on-scroll">
@@ -103,9 +135,12 @@ export default function AboutSection() {
         </div>
 
         {/* Bio */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start mb-20">
-          <div className="lg:col-span-3 reveal-on-scroll">
-            <div className="glass-card neon-border rounded-2xl p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch mb-10">
+          <div className="lg:col-span-4 reveal-on-scroll">
+            <HoloPortrait />
+          </div>
+          <div className="lg:col-span-8 reveal-on-scroll">
+            <div className="glass-card neon-border rounded-2xl p-6 sm:p-8 h-full flex flex-col justify-center">
               <p className="text-foreground text-base sm:text-lg leading-relaxed">
                 {t("about_bio")}
               </p>
@@ -122,9 +157,11 @@ export default function AboutSection() {
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="lg:col-span-2 reveal-on-scroll">
-            <div className="glass-card neon-border-blue rounded-2xl p-8 h-full">
+        <div className="reveal-on-scroll mb-20">
+          <div className="glass-card neon-border-blue rounded-2xl p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
               <h3 className="text-sm font-bold text-accent uppercase tracking-widest mb-6">
                 Languages
               </h3>
@@ -150,8 +187,8 @@ export default function AboutSection() {
                   </div>
                 </div>
               ))}
-
-              <div className="mt-8 pt-6 border-t border-white/5">
+            </div>
+              <div className="md:pl-10 md:border-l border-white/5">
                 <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
                   Soft Skills
                 </h4>
@@ -167,7 +204,6 @@ export default function AboutSection() {
                   ))}
                 </div>
               </div>
-            </div>
           </div>
         </div>
 

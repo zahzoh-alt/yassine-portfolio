@@ -1,7 +1,16 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function CustomCursor() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    // Only on devices with a precise pointer (no touch screens).
+    setEnabled(window.matchMedia("(pointer: fine)").matches && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }, []);
+  return enabled ? <CursorInner /> : null;
+}
+
+function CursorInner() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const mousePos = useRef({ x: -100, y: -100 });

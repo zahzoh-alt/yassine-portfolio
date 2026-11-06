@@ -1,17 +1,34 @@
 "use client";
 import { useLang } from "@/context/LanguageContext";
 import AppLogo from "@/components/ui/AppLogo";
+import { useEffect, useRef } from "react";
+import { robotWave } from "@/lib/robotBus";
 
 export default function Footer() {
   const { t } = useLang();
   const year = 2026;
+  const ref = useRef<HTMLElement>(null);
+
+  // The robot waves goodbye when the visitor reaches the end of the page.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) robotWave();
+      },
+      { threshold: 0.6 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <footer className="relative z-10 border-t py-10 px-4 sm:px-6" style={{ borderColor: "rgba(0,255,255,0.08)" }}>
+    <footer ref={ref} className="relative z-10 border-t py-10 px-4 sm:px-6" style={{ borderColor: "rgba(0,255,255,0.08)" }}>
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Logo + name */}
         <button
